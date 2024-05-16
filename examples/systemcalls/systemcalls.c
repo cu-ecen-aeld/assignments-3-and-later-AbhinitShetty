@@ -1,4 +1,9 @@
 #include "systemcalls.h"
+#include "stdlib.h"
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -16,6 +21,12 @@ bool do_system(const char *cmd)
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
 */
+	int pid_sys;
+	pid_sys = system(cmd);
+	if (pid_sys == -1 || pid_sys != 0)
+		exit(EXIT_FAILURE);
+	else if (pid_sys == 0)
+		exit(EXIT_SUCCESS);
 
     return true;
 }
@@ -25,9 +36,11 @@ bool do_system(const char *cmd)
 *   followed by arguments to pass to the command
 *   Since exec() does not perform path expansion, the command to execute needs
 *   to be an absolute path.
+
 * @param ... - A list of 1 or more arguments after the @param count argument.
 *   The first is always the full path to the command to execute with execv()
 *   The remaining arguments are a list of arguments to pass to the command in execv()
+
 * @return true if the command @param ... with arguments @param arguments were executed successfully
 *   using the execv() call, false if an error occurred, either in invocation of the
 *   fork, waitpid, or execv() command, or if a non-zero return value was returned
@@ -58,7 +71,47 @@ bool do_exec(int count, ...)
  *   as second argument to the execv() command.
  *
 */
-
+    char * rem_arg[count];
+    for(i=0; i<=count; i++){
+        rem_arg[i] = command[i+1];
+    }
+    
+    pid_t pid_fork;
+    fflush(stdout);
+    pid_fork = fork();			//Creating a new process using fork()
+    
+    if (pid_fork == -1){
+    	perror("fork");
+    	exit(1);
+    }
+    
+    if (!pid_fork){
+    	int ret;
+    	ret = execv(command[0], rem_arg);		//Executing the new process using execv()
+    	if (ret == -1) {
+    		perror("execv");
+    		exit(1);
+    	}
+    	else { 
+    		int status;
+    		pid_t pid_wait;
+    		
+    		//pid_wait = waitpid(pid_fork, &status, WNOHANG);	//Wait for the process to terminate 
+    		pid_wait = wait(&status);
+    		if (pid_wait == -1){
+    			perror("waitpid");
+    			exit(1);
+    		}
+    		else {
+    			printf("pid = %d\n",pid_wait);
+    			exit(0);
+    			/*if (WIFEXITED(status))
+    				printf("Normal termination with exit status = %d\n", WIFEXITED(status));
+    			if (WIFSIGNALED(status))
+    				printf("Killed by signal = %d\n",WIFSIGNALED(status));*/
+    		}
+    	}
+    }
     va_end(args);
 
     return true;
