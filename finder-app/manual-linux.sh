@@ -123,14 +123,34 @@ cp $TOOLCHAIN_LIBC/lib64/libc.so.6 ${OUTDIR}/rootfs/lib64/
 
 # TODO: Clean and build the writer utility
 MY_DIR=~/Desktop/Linux_Coursera/Git_Assignment1/assignment-2-AbhinitShetty
-cp ${MY_DIR}/finder-app/writer.out ${OUTDIR}/rootfs/home/
+#cp ${MY_DIR}/finder-app/writer ${OUTDIR}/rootfs/home/
+
 
 
 # TODO: Copy the finder related scripts and executables to the /home directory on the target rootfs
-cp ${MY_DIR}/finder-app/finder.sh ${OUTDIR}/rootfs/home/
-cp ${MY_DIR}/finder-app/finder-test.sh ${OUTDIR}/rootfs/home/
-cp ${MY_DIR}/conf/assignment.txt ${OUTDIR}/rootfs/home/
-cp ${MY_DIR}/conf/username.txt ${OUTDIR}/rootfs/home/
+#cd "$MY_DIR"/finder-app/
+#cp ./*.sh "${OUTDIR}/rootfs/home/"
+#cp ${MY_DIR}/finder-app/finder.sh ${OUTDIR}/rootfs/home/
+#cp ${MY_DIR}/finder-app/finder-test.sh ${OUTDIR}/rootfs/home/
+#cp ${MY_DIR}/conf/assignment.txt ${OUTDIR}/rootfs/home/
+#cp ${MY_DIR}/conf/username.txt ${OUTDIR}/rootfs/home/
+#cp ${MY_DIR}/conf/assignment.txt ${OUTDIR}/rootfs/
+#cp ${MY_DIR}/conf/username.txt ${OUTDIR}/rootfs/
+
+cd "$MY_DIR"/
+
+# TODO: Copy the finder related scripts and executables to the /home directory
+# on the target rootfs
+cp -Lr conf/assignment.txt "${OUTDIR}/rootfs/home/"
+cp -Lr conf/username.txt "${OUTDIR}/rootfs/home/"
+cp -Lr conf/assignment.txt "${OUTDIR}/rootfs/"
+cp -Lr conf/username.txt "${OUTDIR}/rootfs/"
+cd finder-app/
+make clean
+make writer
+cp ./*.sh "${OUTDIR}/rootfs/home/"
+#cp writer.out "${OUTDIR}/rootfs/home/"
+cp *.* "${OUTDIR}/rootfs/home/"
 
 cp ~/Desktop/Linux_Coursera/Git_Assignment1/assignment-3-AbhinitShetty/finder-app/autorun-qemu.sh ${OUTDIR}/rootfs/home/
 
